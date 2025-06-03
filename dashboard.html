@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobSpot - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- ====== NAVIGATION BAR ====== -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="dashboard.html" class="logo">JobSpot</a>
+        </div>
+        <div class="nav-right">
+            <a href="message.html" class="nav-icon" id="messageIcon">
+                <i class="fas fa-comment"></i>
+            </a>
+            <div class="user-profile">
+                <a href="#" id="profileLink">
+                    <img src="img/USERPROFILE.png" alt="Profile" id="profileImage">
+                </a>
+            </div>
+        </div>
+    </nav>
+    <script>
+    // ====== PROFILE NAVIGATION HANDLER ======
+    document.getElementById('profileLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+        if (!userProfile || !userProfile.userType) {
+            window.location.href = 'login.html';
+            return;
+        }
+        if (userProfile.userType === 'job_seeker' || userProfile.userType === 'jobseeker') {
+            window.location.href = 'jobseeker-profile.html';
+        } else if (userProfile.userType === 'employer') {
+            window.location.href = 'employer.html';
+        } else {
+            window.location.href = 'dashboard.html';
+        }
+    });
+    </script>
+
+    <!-- ====== MAIN CONTENT ====== -->
+    <div class="container">
+        <h1 class="newsfeed-title">Newsfeed</h1>
+
+        <!-- ====== JOB POST FORM ====== -->
+        <div id="jobPostForm" class="post-card fb-job-post-form" style="display:none; margin-bottom:2em;">
+            <div class="fb-job-post-header">
+                <img src="img/USERPROFILE.png" alt="Profile" class="fb-job-post-avatar" id="jobPostAvatar">
+                <h2 class="fb-job-post-title">Post a Job</h2>
+            </div>
+            <div class="fb-job-post-fields">
+                <input type="text" id="jobTitle" placeholder="Job Title" required>
+                <textarea id="jobDescription" placeholder="Job Description"></textarea>
+                <input type="text" id="jobLocation" placeholder="Location">
+                <input type="number" id="jobSalary" placeholder="Salary">
+            </div>
+            <button id="postJobButton" class="post-button fb-job-post-btn">Post Job</button>
+        </div>
+
+        <!-- ====== POSTS FEED ====== -->
+        <div class="posts-container" id="postsFeed"></div>
+        <div id="messageBox" style="display:none; margin-top:1em;"></div>
+    </div>
+<script>
+// ====== SUPABASE INIT ======
+const supabaseUrl = "https://ylpobdngzcmevybvnshk.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlscG9iZG5nemNtZXZ5YnZuc2hrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NzExNTAsImV4cCI6MjA2NDQ0NzE1MH0._Cbd60nMt6Cgyqg-Sq24YLVk617Gl9Pn_Zgt3PkpBSQ";
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+// ====== PROFILE IMAGE CLICK ======
+document.getElementById('profileImage').addEventListener('click', () => {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    if (!userProfile || !userProfile.userType) {
+        window.location.href = 'login.html';
+        return;
+    }
+    if (userProfile.userType === 'job_seeker') {
+        window.location.href = 'jobseeker-profile.html';
+    } else if (userProfile.userType === 'employer') {
+        window.location.href = 'employer.html';
+    } else {
+        window.location.href = 'dashboard.html';
+    }
+});
+
+// ====== MESSAGE DISPLAY ======
+function showMessage(msg, isError = false) {
+    const box = document.getElementById('messageBox');
+    box.textContent = msg;
+    box.style.display = "block";
+    box.style.color = isError ? "red" : "green";
+    setTimeout(() => { box.style.display = "none"; }, 2500);
+}
+
+// ====== SHOW JOB POST FORM ======
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('jobPostForm').style.display = 'block';
+});
+
+// ====== CREATE JOB POST ======
+document.getElementById('postJobButton').addEventListener('click', async () => {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    if (!userProfile || !userProfile.id) {
+        showMessage("You must be logged in to post a job.", true);
+        return;
+    }
+    const title = document.getElementById('jobTitle').value.trim();
+    const description = document.getElementById('jobDescription').value.trim();
+    const location = document.getElementById('jobLocation').value.trim();
+    const salary = parseInt(document.getElementById('jobSalary').value, 10);
+
+    if (!title) {
+        showMessage("Job title is required.", true);
+        return;
+    }
+
+    try {
+        const normalizedPosterType =
+            userProfile.userType === 'employer'
+                ? 'employer'
+                : 'job_seeker';
+
+        const { error } = await supabase
+            .from('job_postings')
+            .insert([{
+                poster_id: userProfile.id,
+                poster_type: normalizedPosterType,
+                title,
+                description,
+                location,
+                salary: isNaN(salary) ? null : salary
+            }]);
+        if (error) throw error;
+        showMessage("Job posted successfully!");
+        document.getElementById('jobTitle').value = "";
+        document.getElementById('jobDescription').value = "";
+        document.getElementById('jobLocation').value = "";
+        document.getElementById('jobSalary').value = "";
+        loadPosts();
+    } catch (error) {
+        showMessage(error.message || "Error posting job.", true);
+    }
+});
+
+// ====== LOAD POSTS FEED ======
+async function loadPosts() {
+    try {
+        const { data: jobs, error } = await supabase
+            .from('job_postings')
+            .select("*")
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const postsContainer = document.getElementById('postsFeed');
+        postsContainer.innerHTML = "";
+
+        const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+
+        for (const job of jobs) {
+            let posterName = "Unknown";
+            let posterType = job.poster_type === "employer" ? "Employer" : "Job Seeker";
+            let profileImg = "img/USERPROFILE.png";
+            if (job.poster_type === "employer") {
+                const { data } = await supabase
+                    .from('employers')
+                    .select('full_name, profile_image_url')
+                    .eq('id', job.poster_id)
+                    .single();
+                if (data) {
+                    posterName = data.full_name;
+                    if (data.profile_image_url) profileImg = data.profile_image_url;
+                }
+            } else {
+                const { data } = await supabase
+                    .from('job_seekers')
+                    .select('full_name, profile_image_url')
+                    .eq('id', job.poster_id)
+                    .single();
+                if (data) {
+                    posterName = data.full_name;
+                    if (data.profile_image_url) profileImg = data.profile_image_url;
+                }
+            }
+
+            const canDelete = userProfile && userProfile.id === job.poster_id;
+            const deleteBtn = canDelete
+                ? `<button class="delete-post-btn" onclick="deletePost('${job.id}')">Delete</button>`
+                : "";
+
+            const postElement = document.createElement('div');
+            postElement.className = "post-card";
+            postElement.innerHTML = `
+                <div class="post-header">
+                    <img src="${profileImg}" alt="Profile" class="post-profile-img">
+                    <div class="post-info">
+                        <h3>${posterName} <span class="user-type">(${posterType})</span></h3>
+                        <span>${new Date(job.created_at).toLocaleString()}</span>
+                    </div>
+                    <button class="view-profile-btn" onclick="viewProfile('${job.poster_id}', '${job.poster_type}')">View Profile</button>
+                    ${deleteBtn}
+                </div>
+                <div class="post-content">
+                    <h4 style="margin:0 0 0.5em 0;">${job.title}</h4>
+                    <p>${job.description || ""}</p>
+                    <div><b>Location:</b> ${job.location || "N/A"}</div>
+                    <div><b>Salary:</b> ${job.salary ? job.salary : "N/A"}</div>
+                </div>
+            `;
+            postsContainer.appendChild(postElement);
+        }
+    } catch (error) {
+        console.error("Error loading job posts:", error.message);
+    }
+}
+
+// ====== DELETE POST ======
+async function deletePost(postId) {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+    const { error } = await supabase
+        .from('job_postings')
+        .delete()
+        .eq('id', postId);
+    if (error) {
+        alert("Failed to delete post.");
+    } else {
+        loadPosts();
+    }
+}
+
+// ====== VIEW PROFILE ======
+function viewProfile(userId, userType) {
+    if (userType === 'employer') {
+        window.location.href = `employer.html?id=${userId}`;
+    } else if (userType === 'job_seeker') {
+        window.location.href = `jobseeker-profile.html?id=${userId}`;
+    }
+}
+
+// ====== INITIAL LOAD ======
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('jobPostForm').style.display = 'block';
+    loadPosts();
+});
+
+// ====== PROFILE LOAD FOR ID IN URL ======
+const urlParams = new URLSearchParams(window.location.search);
+const idToLoad = urlParams.get('id');
+
+if (idToLoad) {
+    loadProfile(idToLoad);
+}
+
+// ====== LOAD PROFILE FUNCTION ======
+async function loadProfile(userId) {
+    const loggedInUser = JSON.parse(localStorage.getItem('userProfile'));
+    let { data: jobSeeker, error: jsError } = await supabase
+        .from('job_seekers')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+    if (jsError || !jobSeeker) {
+        document.getElementById('profileName').textContent = "User not found";
+        document.getElementById('profileEmail').textContent = "";
+        document.getElementById('hireButton').style.display = 'none';
+        return;
+    }
+
+    document.getElementById('profileName').textContent = jobSeeker.full_name;
+    document.getElementById('profileEmail').textContent = jobSeeker.email || "";
+
+    const hireBtn = document.getElementById('hireButton');
+    if (
+        hireBtn &&
+        loggedInUser &&
+        loggedInUser.userType === 'employer' &&
+        loggedInUser.id !== userId
+    ) {
+        hireBtn.style.display = 'inline-block';
+        hireBtn.onclick = async function() {
+            const { error } = await supabase
+                .from('job_seekers')
+                .update({ hire_status: 'Hired' })
+                .eq('id', userId);
+            if (!error) {
+                hireBtn.disabled = true;
+                hireBtn.textContent = "Hired";
+            } else {
+                alert("Failed to update status.");
+            }
+        };
+    } else if (hireBtn) {
+        hireBtn.style.display = 'none';
+    }
+}
+</script>
+</body>
+</html>

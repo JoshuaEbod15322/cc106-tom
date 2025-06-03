@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobSpot - Employer Profile</title>
+    <link rel="stylesheet" href="user.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto;
+            background: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background: #fff;
+            margin: 10% auto;
+            padding: 2em;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+        .modal .close {
+            position: absolute;
+            right: 1em;
+            top: 1em;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- ====== NAVIGATION BAR ====== -->
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">JobSpot</a>
+        <div class="nav-right">
+            <a href="#" class="settings-icon">
+                <i class="fas fa-cog"></i>
+            </a>
+            <button id="logoutBtn" class="logout-btn">Log Out</button>        
+        </div>
+    </nav>
+
+    <!-- ====== PROFILE HEADER ====== -->
+    <div class="profile-background"></div>
+    <div class="cover-image">
+        <button class="edit-cover-btn" id="editCoverBtn">
+            <i class="fas fa-camera"></i>
+        </button>
+    </div>
+    <div class="profile-container employer-profile">
+        <div class="profile-header">
+            <div class="profile-image-wrapper">
+                <div class="profile-image-container">
+                    <img id="profileImage" src="img/USERPROFILE.png" alt="employer profile">
+                    <button class="edit-image-btn" id="editImageBtn">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="profile-title">
+                <h2 id="userName" class="employer-name"></h2>
+                <h4 id="userTypeDisplay" class="employer-type"></h4>
+                <span class="company-name" id="companyName"></span>
+            </div>
+        </div>
+
+        <!-- ====== PROFILE CONTENT ====== -->
+        <div class="profile-content">
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2>About</h2>
+                    <button class="edit-btn" id="editAboutBtn">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </div>
+                <div class="section-content" id="aboutContent">About yourself</div>
+                <div class="edit-about-form" id="editAboutForm" style="display: none;">
+                    <textarea id="aboutTextarea"></textarea>
+                    <div class="edit-buttons">
+                        <button class="save-btn" id="saveAboutBtn">Save</button>
+                        <button class="cancel-btn" id="cancelAboutBtn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-info">
+                    <h3>Email</h3>
+                    <span id="emailText"></span>
+                </div>
+                <div class="contact-info">
+                    <h3>Phone</h3>
+                    <p id="phoneText">N/A</p>
+                </div>
+                <div class="contact-buttons">
+                    <a href="applicant.html"><button class="applicant-btn">Applicant</button></a>
+                    <a href="message.html"><button class="message-btn">Message</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== IMAGE UPLOAD MODAL ====== -->
+    <div id="imageUploadModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Update Profile Picture</h2>
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag & Drop your image here</p>
+                <p>or</p>
+                <label for="imageInput" class="upload-btn">Choose File</label>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            </div>
+            <div class="preview-area" id="previewArea" style="display: none;">
+                <img id="imagePreview" src="" alt="Preview">
+                <button id="uploadButton" class="upload-confirm-btn">Upload Image</button>
+                <button id="cancelButton" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== COVER IMAGE UPLOAD MODAL ====== -->
+    <div id="coverUploadModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Update Cover Image</h2>
+            <div class="upload-area" id="coverUploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag & Drop your cover image here</p>
+                <p>or</p>
+                <label for="coverImageInput" class="upload-btn">Choose File</label>
+                <input type="file" id="coverImageInput" accept="image/*" style="display: none;">
+            </div>
+            <div class="preview-area" id="coverPreviewArea" style="display: none;">
+                <img id="coverImagePreview" src="" alt="Preview">
+                <button id="uploadCoverButton" class="upload-confirm-btn">Upload Image</button>
+                <button id="cancelCoverButton" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== ABOUT EDIT MODAL ====== -->
+    <div id="aboutEditModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeAboutModal">&times;</span>
+            <h2>Edit About</h2>
+            <textarea id="aboutTextarea" rows="5" style="width:100%"></textarea>
+            <div style="margin-top:1em;">
+                <button id="saveAboutBtn" class="save-btn">Save</button>
+                <button id="cancelAboutBtn" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== PHONE EDIT MODAL ====== -->
+    <div id="phoneEditModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closePhoneModal">&times;</span>
+            <h2>Edit Phone</h2>
+            <input type="text" id="phoneInput" style="width:100%;padding:8px;">
+            <div style="margin-top:1em;">
+                <button id="savePhoneBtn" class="save-btn">Save</button>
+                <button id="cancelPhoneBtn" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script>
+    // ====== SUPABASE PROFILE LOAD ======
+    const supabaseUrl = "https://ylpobdngzcmevybvnshk.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlscG9iZG5nemNtZXZ5YnZuc2hrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NzExNTAsImV4cCI6MjA2NDQ0NzE1MH0._Cbd60nMt6Cgyqg-Sq24YLVk617Gl9Pn_Zgt3PkpBSQ";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        const params = new URLSearchParams(window.location.search);
+        const employerId = params.get('id');
+
+        const nameElement = document.getElementById('userName');
+        const typeElement = document.getElementById('userTypeDisplay');
+        const aboutContent = document.getElementById('aboutContent');
+        const phoneText = document.getElementById('phoneText');
+        const emailText = document.getElementById('emailText');
+        const companyName = document.getElementById('companyName');
+        const profileImage = document.getElementById('profileImage');
+
+        if (!employerId) {
+            nameElement.textContent = "Employer Not Found";
+            if (aboutContent) aboutContent.textContent = "No employer ID provided in URL.";
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from('employers')
+            .select('*')
+            .eq('id', employerId)
+            .single();
+
+        if (error || !data) {
+            nameElement.textContent = "Employer Not Found";
+            if (aboutContent) aboutContent.textContent = "Unable to load employer profile.";
+            return;
+        }
+
+        nameElement.textContent = data.full_name || "N/A";
+        typeElement.textContent = "Employer";
+        aboutContent.textContent = data.about || "About yourself";
+        phoneText.textContent = data.phone || "N/A";
+        emailText.textContent = data.email || "N/A";
+        companyName.textContent = data.company_name || "";
+        if (data.profile_image_url) profileImage.src = data.profile_image_url;
+    });
+    </script>
+</body>
+</html>

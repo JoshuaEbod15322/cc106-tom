@@ -1,0 +1,486 @@
+/* Global Styles */
+:root {
+    --primary-color: #0066FF;
+    --secondary-color: #f5f5f5;
+    --text-color: #333;
+    --border-color: #e0e0e0;
+    --hover-color: #0052cc;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f9fafb;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Post Card Styles */
+.post-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.post-info h3 {
+    margin: 0;
+    color: #1976d2;
+    font-size: 1.1rem;
+}
+
+.user-type {
+    color: #888;
+    font-size: 0.95em;
+    font-weight: 400;
+}
+
+.view-profile-btn {
+    background-color: transparent;
+    color: #1976d2;
+    border: 1px solid #1976d2;
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.2s;
+}
+
+.view-profile-btn:hover {
+    background-color: #1976d2;
+    color: #fff;
+}
+
+.post-content p {
+    color: #222;
+    font-size: 1.05rem;
+    margin: 0;
+}
+/* Facebook-like Post Card */
+.post-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.post-profile-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e0e0e0;
+}
+
+.post-info h3 {
+    margin: 0;
+    color: #1976d2;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.user-type {
+    color: #888;
+    font-size: 0.95em;
+    font-weight: 400;
+}
+
+.delete-post-btn {
+    background-color: #ff4444;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-left: 0.5em;
+    transition: background 0.2s;
+}
+.delete-post-btn:hover {
+    background-color: #d32f2f;
+}
+
+.post-info span {
+    color: #666;
+    font-size: 0.92rem;
+}
+
+.view-profile-btn {
+    margin-left: auto;
+    background-color: transparent;
+    color: #1976d2;
+    border: 1px solid #1976d2;
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.2s;
+}
+
+.view-profile-btn:hover {
+    background-color: #1976d2;
+    color: #fff;
+}
+
+.post-content h4 {
+    margin: 0 0 0.5em 0;
+    color: #222;
+    font-size: 1.1rem;
+}
+
+.post-content p {
+    color: #222;
+    font-size: 1.05rem;
+    margin: 0 0 0.5em 0;
+}
+/* Post Input Styles */
+.post-input-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.post-input-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.styled-textarea {
+    width: 100%;
+    min-height: 60px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    resize: vertical;
+    background: #f7faff;
+    transition: border 0.2s;
+}
+
+.styled-textarea:focus {
+    border: 1.5px solid #1976d2;
+    outline: none;
+}
+/* Navbar Styles */
+.navbar {
+    background-color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.logo {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-icon {
+    position: relative;
+    color: var(--text-color);
+    font-size: 1.25rem;
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.nav-icon:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #ff4444;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    display: none;
+}
+
+.user-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.user-profile img:hover {
+    transform: scale(1.05);
+}
+
+/* Container Styles */
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.newsfeed-title {
+    color: var(--text-color);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Post Creation Styles */
+.post-creation {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+#postContent {
+    width: 100%;
+    min-height: 100px;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: none;
+    margin-bottom: 1rem;
+}
+
+.post-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.post-button:hover {
+    background-color: var(--hover-color);
+}
+
+/* Posts Feed Styles */
+.post-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.post-header img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.post-info h3 {
+    margin: 0;
+    color: var(--text-color);
+}
+
+.post-info span {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.post-content {
+    margin-bottom: 1rem;
+}
+
+.post-content p {
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.view-profile-btn {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-profile-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Facebook-like Job Post Form */
+.fb-job-post-form {
+    max-width: 600px;
+    margin: 0 auto 2em auto;
+    padding: 20px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.fb-job-post-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.fb-job-post-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e0e0e0;
+}
+
+.fb-job-post-title {
+    font-size: 1.3rem;
+    color: #1976d2;
+    margin: 0;
+    font-weight: 600;
+}
+
+.fb-job-post-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.fb-job-post-fields input,
+.fb-job-post-fields textarea {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #f7faff;
+    transition: border 0.2s;
+}
+
+.fb-job-post-fields input:focus,
+.fb-job-post-fields textarea:focus {
+    border: 1.5px solid #1976d2;
+    outline: none;
+}
+
+.fb-job-post-fields textarea {
+    min-height: 70px;
+    resize: vertical;
+}
+
+.fb-job-post-btn {
+    align-self: flex-end;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 2.2rem;
+    border-radius: 20px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+}
+
+.fb-job-post-btn:hover {
+    background-color: #1251a5;
+}
+
+/* Ensure both .post-card and .fb-job-post-form have the same width and centering */
+.post-card,
+.fb-job-post-form {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto 2em auto;
+    box-sizing: border-box;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+
+    .post-card {
+        padding: 1rem;
+    }
+
+    .nav-right {
+        gap: 1rem;
+    }
+}
