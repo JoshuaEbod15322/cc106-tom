@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobSpot - Job Seeker Profile</title>
+    <link rel="stylesheet" href="user.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<style>
+    .hire-btn {
+        background-color: #43a047;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        font-size: 1em;
+        margin-left: 0.5em;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .hire-btn:hover {
+        background-color: #2e7031;
+    }
+</style>
+
+    <!-- ====== NAVIGATION BAR ====== -->
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">JobSpot</a>
+        <div class="nav-right">
+            <a href="#" class="settings-icon">
+                <i class="fas fa-cog"></i>
+            </a>
+            <button class="logout-btn" onclick="handleLogout()">Log Out</button> 
+        </div>
+    </nav>
+
+    <div class="profile-background"></div>
+    <div class="cover-image">
+        <button class="edit-cover-btn" id="editCoverBtn">
+            <i class="fas fa-camera"></i>
+        </button>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-image-wrapper">
+                <div class="profile-image-container">
+                    <img id="profileImage" src="img/USERPROFILE.png" alt="Profile Picture">
+                    <button class="edit-image-btn" id="editImageBtn">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="profile-title">
+                <h1 id="userName"></h1>
+                <span class="hire-status">Not Hired</span>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2>About</h2>
+                    <button class="edit-btn" id="editAboutBtn">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </div>
+                <div class="section-content" id="aboutContent">
+                    <span id="aboutText">About yourself</span>
+                </div>
+                <div class="edit-about-form" id="editAboutForm" style="display: none;">
+                    <textarea id="aboutTextarea"></textarea>
+                    <div class="edit-buttons">
+                        <button class="save-btn" id="saveAboutBtn">Save</button>
+                        <button class="cancel-btn" id="cancelAboutBtn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-details">
+                <div class="details-card">
+                    <div class="details-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-envelope"></i> Email</h3>
+                            <button class="edit-btn" data-field="email">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                        </div>
+                        <p id="emailText">xander.ford@gmail.com</p>
+                    </div>
+                    <div class="details-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-phone"></i> Phone</h3>
+                            <button class="edit-btn" data-field="phone">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                        </div>
+                        <p id="phoneText">N/A</p>
+                    </div>
+                    <div class="details-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-tools"></i> Skills</h3>
+                            <button class="edit-btn" id="editSkillsBtn">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="skills-list" id="skillsList">
+                            <span class="skill-tag">UI Design<i class="fas fa-times"></i></span>
+                            <span class="skill-tag">UX Design<i class="fas fa-times"></i></span>
+                            <span class="skill-tag">Web Development<i class="fas fa-times"></i></span>
+                        </div>
+                    </div>
+                    <div class="contact-buttons">
+                        <a href="message.html"><button class="message-btn">Message</button></a>
+                        <button id="hireBtn" class="hire-btn" style="display:none;">Hire</button>
+                        <span class="hire-status"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== IMAGE UPLOAD MODAL ====== -->
+    <div id="imageUploadModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Update Profile Picture</h2>
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag & Drop your image here</p>
+                <p>or</p>
+                <label for="imageInput" class="upload-btn">Choose File</label>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            </div>
+            <div class="preview-area" id="previewArea" style="display: none;">
+                <img id="imagePreview" src="" alt="Preview">
+                <button id="uploadButton" class="upload-confirm-btn">Upload Image</button>
+                <button id="cancelButton" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== COVER IMAGE UPLOAD MODAL ====== -->
+    <div id="coverUploadModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Update Cover Image</h2>
+            <div class="upload-area" id="coverUploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag & Drop your cover image here</p>
+                <p>or</p>
+                <label for="coverImageInput" class="upload-btn">Choose File</label>
+                <input type="file" id="coverImageInput" accept="image/*" style="display: none;">
+            </div>
+            <div class="preview-area" id="coverPreviewArea" style="display: none;">
+                <img id="coverImagePreview" src="" alt="Preview">
+                <button id="uploadCoverButton" class="upload-confirm-btn">Upload Image</button>
+                <button id="cancelCoverButton" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== EMAIL EDIT MODAL ====== -->
+    <div id="emailEditModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Update Email</h2>
+            <div class="edit-form">
+                <input type="email" id="emailInput" class="form-input" placeholder="Enter your email">
+                <div class="button-group">
+                    <button id="saveEmailBtn" class="save-btn">Save Changes</button>
+                    <button id="cancelEmailBtn" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== PHONE EDIT MODAL ====== -->
+    <div id="phoneEditModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Update Phone Number</h2>
+            <div class="edit-form">
+                <input type="tel" id="phoneInput" class="form-input" placeholder="Enter your phone number">
+                <div class="button-group">
+                    <button id="savePhoneBtn" class="save-btn">Save Changes</button>
+                    <button id="cancelPhoneBtn" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== SKILLS EDIT MODAL ====== -->
+    <div id="skillsEditModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Skill</h2>
+            <div class="edit-form">
+                <input type="text" id="skillInput" class="form-input" placeholder="Enter a skill">
+                <div class="button-group">
+                    <button id="addSkillBtn" class="save-btn">Add Skill</button>
+                    <button id="cancelSkillBtn" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1 id="profileName"></h1>
+    <p id="profileEmail"></p>
+    <button id="hireButton" style="display:none;">Hire</button>
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script>
+// ====== SUPABASE INIT ======
+const supabaseUrl = "https://ylpobdngzcmevybvnshk.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlscG9iZG5nemNtZXZ5YnZuc2hrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NzExNTAsImV4cCI6MjA2NDQ0NzE1MH0._Cbd60nMt6Cgyqg-Sq24YLVk617Gl9Pn_Zgt3PkpBSQ";
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+// ====== LOAD PROFILE ======
+async function loadProfile() {
+    const params = new URLSearchParams(window.location.search);
+    const jobSeekerId = params.get('id');
+    let idToLoad = jobSeekerId;
+    if (!idToLoad) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) idToLoad = user.id;
+    }
+    if (!idToLoad) {
+        document.getElementById('userName').textContent = "Profile Not Found";
+        return;
+    }
+    const { data, error } = await supabase
+        .from('job_seekers')
+        .select('*')
+        .eq('id', idToLoad)
+        .single();
+    if (error || !data) {
+        document.getElementById('userName').textContent = "Profile Not Found";
+        return;
+    }
+    document.getElementById('userName').textContent = data.full_name || "N/A";
+    document.getElementById('emailText').textContent = data.email || "N/A";
+    document.getElementById('phoneText').textContent = data.phone ? data.phone : "N/A";
+    document.querySelector('.hire-status').textContent = data.hire_status || "N/A";
+    document.getElementById('aboutContent').innerHTML = `<p>${data.about ? data.about : "About yourself"}</p>`;
+    document.getElementById('aboutText').textContent = data.about ? data.about : "About yourself";
+    if (data.profile_image_url) {
+        document.getElementById('profileImage').src = data.profile_image_url;
+    }
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    const hireBtn = document.getElementById('hireBtn');
+    if (
+        hireBtn &&
+        userProfile &&
+        userProfile.userType === 'employer' &&
+        userProfile.id !== idToLoad
+    ) {
+        hireBtn.style.display = 'inline-block';
+        hireBtn.onclick = async function() {
+            const { error } = await supabase
+                .from('job_seekers')
+                .update({ hire_status: 'Hired' })
+                .eq('id', idToLoad);
+            if (!error) {
+                document.querySelector('.hire-status').textContent = 'Hired';
+                hireBtn.disabled = true;
+                hireBtn.textContent = "Hired";
+            } else {
+                alert("Failed to update status.");
+            }
+        };
+    } else if (hireBtn) {
+        hireBtn.style.display = 'none';
+    }
+}
+
+// ====== DOM READY ======
+document.addEventListener('DOMContentLoaded', function() {
+    loadProfile();
+    const logoutBtn = document.querySelector('.logout-btn');
+    if (logoutBtn) {
+        logoutBtn.onclick = function() {
+            localStorage.removeItem('userProfile');
+            supabase.auth.signOut().then(() => {
+                window.location.href = "login.html";
+            });
+        };
+    }
+});
+
+// ====== EMAIL MODAL LOGIC ======
+const emailEditModal = document.getElementById('emailEditModal');
+const emailEditBtn = document.querySelector('button.edit-btn[data-field="email"]');
+const emailCloseBtn = emailEditModal.querySelector('.close');
+const saveEmailBtn = document.getElementById('saveEmailBtn');
+const cancelEmailBtn = document.getElementById('cancelEmailBtn');
+const emailInput = document.getElementById('emailInput');
+
+emailEditBtn.onclick = function() {
+    emailEditModal.style.display = 'block';
+    emailInput.value = document.getElementById('emailText').textContent !== "N/A" ? document.getElementById('emailText').textContent : "";
+};
+emailCloseBtn.onclick = cancelEmailBtn.onclick = function() {
+    emailEditModal.style.display = 'none';
+};
+saveEmailBtn.onclick = async function() {
+    const newEmail = emailInput.value.trim();
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    if (!userProfile || !newEmail) return;
+    const { error } = await supabase
+        .from('job_seekers')
+        .update({ email: newEmail })
+        .eq('id', userProfile.id);
+    if (!error) {
+        document.getElementById('emailText').textContent = newEmail;
+        emailEditModal.style.display = 'none';
+    }
+};
+
+// ====== PHONE MODAL LOGIC ======
+const phoneEditModal = document.getElementById('phoneEditModal');
+const phoneEditBtn = document.querySelector('button.edit-btn[data-field="phone"]');
+const phoneCloseBtn = phoneEditModal.querySelector('.close');
+const savePhoneBtn = document.getElementById('savePhoneBtn');
+const cancelPhoneBtn = document.getElementById('cancelPhoneBtn');
+const phoneInput = document.getElementById('phoneInput');
+
+phoneEditBtn.onclick = function() {
+    phoneEditModal.style.display = 'block';
+    phoneInput.value = document.getElementById('phoneText').textContent !== "N/A" ? document.getElementById('phoneText').textContent : "";
+};
+phoneCloseBtn.onclick = cancelPhoneBtn.onclick = function() {
+    phoneEditModal.style.display = 'none';
+};
+savePhoneBtn.onclick = async function() {
+    const newPhone = phoneInput.value.trim();
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    if (!userProfile) return;
+    const { error } = await supabase
+        .from('job_seekers')
+        .update({ phone: newPhone })
+        .eq('id', userProfile.id);
+    if (!error) {
+        document.getElementById('phoneText').textContent = newPhone || "N/A";
+        phoneEditModal.style.display = 'none';
+    }
+};
+
+// ====== MODAL CLOSE ON OUTSIDE CLICK ======
+window.onclick = function(event) {
+    if (event.target === emailEditModal) emailEditModal.style.display = 'none';
+    if (event.target === phoneEditModal) phoneEditModal.style.display = 'none';
+}
+
+// ====== DISPLAY USER NAME FROM LOCALSTORAGE ======
+function displayUserName() {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    const nameElement = document.getElementById('userName');
+    if (userProfile && userProfile.name && nameElement) {
+        nameElement.textContent = userProfile.name;
+    } else if (nameElement) {
+        nameElement.textContent = "N/A";
+    }
+}
+document.addEventListener('DOMContentLoaded', displayUserName);
+
+// ====== LOGOUT FUNCTION ======
+function handleLogout() {
+    localStorage.removeItem('userProfile');
+    supabase.auth.signOut().then(() => {
+        window.location.href = "login.html";
+    });
+}
+</script>
+</body>
+</html>

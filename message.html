@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobSpot - Messages</title>
+    <link rel="stylesheet" href="applicant.css">
+    <link rel="icon" sizes="16x16" href="img/USERPROFILE.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<style>
+/* ====== CHAT STYLES ====== */
+.chat-messages {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.5em;
+    padding: 1em 0.5em;
+    min-height: 300px;
+    max-height: 60vh;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    justify-content: flex-start;
+}
+.message-bubble {
+    max-width: 60%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    margin: 5px 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    display: inline-block;
+    position: relative;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.sent-message {
+    background-color: #0084ff;
+    color: white;
+    align-self: flex-end;
+    text-align: left;
+    border-bottom-right-radius: 6px;
+}
+.received-message {
+    background-color: #e4e6eb;
+    color: black;
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+}
+.no-messages {
+    color: #888;
+    text-align: center;
+    margin-top: 1em;
+}
+.message-input-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: #ffffff;
+}
+.message-input-container input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+.send-button {
+    background-color: #0084ff;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.message-sidebar {
+    width: 300px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+}
+.chat-user-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0.6em 1em;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    transition: background 0.2s;
+}
+.chat-user-list-item:hover, .chat-user-list-item.active {
+    background: #0084ff;
+    color: white;
+}
+.chat-list-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.user-type-label {
+    margin-left: auto;
+    font-size: 0.85em;
+    color: #888;
+}
+.chat-header .chat-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f0f2f5;
+    margin-bottom: 5px;
+}
+.user-avatar, #chatUserImage {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.message-main, .message-sidebar {
+    margin-top: 70px;
+}
+.message-bubble i.fas.fa-trash-alt {
+    font-size: 1em;
+    vertical-align: middle;
+    margin-left: 8px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.message-bubble i.fas.fa-trash-alt:hover {
+    opacity: 1;
+    color: #d32f2f;
+}
+</style>
+
+<!-- ====== NAVIGATION BAR ====== -->
+<nav class="navbar">
+    <a href="dashboard.html" class="logo">JobSpot</a>
+    <div class="nav-right">
+        <div class="user-profile">
+            <a href="dashboard.html" class="profile-link">
+                <i class="fas fa-home"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ====== MAIN CONTENT ====== -->
+<div class="container message-container">
+    <div class="message-sidebar">
+        <div class="search-box">
+            <input type="text" id="searchChat" placeholder="Search messages...">
+        </div>
+        <div class="chat-list" id="chatList"></div>
+    </div>
+
+    <div class="message-main">
+        <div class="chat-header">
+            <div class="chat-user">
+                <img src="img/USERPROFILE.png" alt="Chat User" id="chatUserImage">
+                <span id="chatUserName">User Name</span>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="message-input-container">
+            <input type="text" id="messageInput" placeholder="Type your message...">
+            <button id="sendMessage" class="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== SCRIPTS ====== -->
+<script>
+const supabaseUrl = "https://ylpobdngzcmevybvnshk.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlscG9iZG5nemNtZXZ5YnZuc2hrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NzExNTAsImV4cCI6MjA2NDQ0NzE1MH0._Cbd60nMt6Cgyqg-Sq24YLVk617Gl9Pn_Zgt3PkpBSQ";
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+let selectedChatUser = null;
+let currentUser = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    currentUser = JSON.parse(localStorage.getItem('userProfile'));
+    await loadAllUsers();
+});
+
+async function loadAllUsers() {
+    const chatList = document.getElementById('chatList');
+    chatList.innerHTML = "";
+
+    const { data: employers, error: empError } = await supabase
+        .from('employers')
+        .select('id, full_name, profile_image_url');
+    const { data: jobSeekers, error: jsError } = await supabase
+        .from('job_seekers')
+        .select('id, full_name, profile_image_url');
+
+    if (empError || jsError) {
+        chatList.innerHTML = "<div>Error loading users.</div>";
+        return;
+    }
+
+    const allUsers = [
+        ...(employers || []).map(u => ({...u, userType: 'employer'})),
+        ...(jobSeekers || []).map(u => ({...u, userType: 'job_seeker'}))
+    ].filter(u => !currentUser || u.id !== currentUser.id);
+
+    allUsers.forEach(user => {
+        const userDiv = document.createElement('div');
+        userDiv.className = "chat-user-list-item";
+        userDiv.innerHTML = `
+            <img src="${user.profile_image_url || 'img/USERPROFILE.png'}" alt="User" class="chat-list-avatar">
+            <span>${user.full_name}</span>
+            <span class="user-type-label">${user.userType === 'employer' ? 'Employer' : 'Job Seeker'}</span>
+        `;
+        userDiv.onclick = () => selectChatUser(user, userDiv);
+        chatList.appendChild(userDiv);
+    });
+}
+
+function selectChatUser(user, userDiv) {
+    selectedChatUser = user;
+    document.getElementById('chatUserName').textContent = user.full_name;
+    document.getElementById('chatUserImage').src = user.profile_image_url || 'img/USERPROFILE.png';
+
+    document.querySelectorAll('.chat-user-list-item').forEach(el => el.classList.remove('active'));
+    if (userDiv) userDiv.classList.add('active');
+
+    loadChatMessages(user.id);
+}
+
+async function loadChatMessages(otherUserId) {
+    if (!currentUser || !selectedChatUser) return;
+
+    const { data: messages, error } = await supabase
+      .from('messages')
+      .select('id,content,sender_id,receiver_id,sent_at')
+      .or(
+        `and(sender_id.eq.${currentUser.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUser.id})`
+      )
+      .order('sent_at', { ascending: true });
+
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML = "";
+
+    if (messages && messages.length > 0) {
+        messages.forEach(msg => {
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "flex";
+            wrapper.style.alignItems = "center";
+            wrapper.style.justifyContent = msg.sender_id === currentUser.id ? "flex-end" : "flex-start";
+            wrapper.style.marginBottom = "2px";
+
+            if (msg.sender_id === currentUser.id) {
+                const deleteIcon = document.createElement("span");
+                deleteIcon.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteIcon.title = "Delete message";
+                deleteIcon.style.cursor = "pointer";
+                deleteIcon.style.color = "#ff5252";
+                deleteIcon.style.marginRight = "8px";
+                deleteIcon.onclick = async (e) => {
+                    e.stopPropagation();
+                    if (confirm("Delete this message?")) {
+                        await supabase.from('messages').delete().eq('id', msg.id);
+                        loadChatMessages(selectedChatUser.id);
+                    }
+                };
+                wrapper.appendChild(deleteIcon);
+            } else {
+                const spacer = document.createElement("span");
+                spacer.style.display = "inline-block";
+                spacer.style.width = "24px";
+                wrapper.appendChild(spacer);
+            }
+
+            const messageBubble = document.createElement("div");
+            messageBubble.classList.add(
+                "message-bubble",
+                msg.sender_id === currentUser.id ? "sent-message" : "received-message"
+            );
+            messageBubble.textContent = msg.content;
+
+            wrapper.appendChild(messageBubble);
+            chatMessages.appendChild(wrapper);
+        });
+    } else {
+        chatMessages.innerHTML = "<div class='no-messages'>No messages yet.</div>";
+    }
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+document.getElementById('sendMessage').addEventListener('click', async () => {
+    const input = document.getElementById('messageInput');
+    const content = input.value.trim();
+    if (!content || !selectedChatUser || !currentUser) return;
+
+    const { error } = await supabase
+        .from('messages')
+        .insert([{
+            sender_id: currentUser.id,
+            receiver_id: selectedChatUser.id,
+            content: content,
+            sent_at: new Date().toISOString()
+        }]);
+
+    if (!error) {
+        input.value = "";
+        loadChatMessages(selectedChatUser.id);
+    }
+});
+
+document.getElementById('messageInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        document.getElementById('sendMessage').click();
+    }
+});
+</script>
+</body>
+</html>
